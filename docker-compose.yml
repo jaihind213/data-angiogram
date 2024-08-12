@@ -1,0 +1,78 @@
+version: "2"
+
+services:
+  zookeeper:
+    image: 'bitnami/zookeeper:3.5'
+    #docker run --name zookeeper -d --hostname=zookeeper --network=test -e ZK_SERVER_HEAP=128  -e ALLOW_ANONYMOUS_LOGIN=yes  -p 2181:2181 -t bitnami/zookeeper:3.5
+    #in github workflow, start zk seperately, if put in docker-compose, sometimes it takes time and kafka does not startup properly
+    hostname: zookeeper
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZK_SERVER_HEAP=128
+    networks:
+      - test
+  kafka:
+    image: 'bitnami/kafka:3.2'
+    #hostname: kafka
+    #pass the external host ip as env variable HOST_IP before running this compose.
+    #ex: export HOST_IP=$(hostname -I | awk '{print $1}')
+    ports:
+      - "9092:9092"
+      - "9094:9094"
+      - "9095:9095"
+    networks:
+      - test
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094,EXTERNAL2://:9095
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094,EXTERNAL2://${HOST_IP}:9095
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL2:PLAINTEXT
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+  init-kafka:
+    image: confluentinc/cp-kafka:6.1.1
+    depends_on:
+      - kafka
+    networks:
+      - test
+    command: bash -c "sleep 40;
+             kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic taxi_rides  --replication-factor 1 --partitions 1 ; "
+  postgres:
+    networks:
+      - test
+    image: hbontempo/postgres-hll:15-alpine3.17-latest
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+  angiogram-api:
+    image: jaihind213/angiogram-api:1.0
+    container_name: angiogram-api
+    networks:
+      - test
+    ports:
+      - "8000:8000"
+    environment:
+      KAFKA_BROKER_URL: kafka:9092
+    depends_on:
+      - kafka
+      - init-kafka
+
+volumes:
+  kafka_data:
+    driver: local
+  db_data:
+    driver: local
+
+networks:
+  #create network called 'test' outside this file
+  #or point to 'minikube' network while using minikube k8s
+  #ex: 'docker network create test'
+  test:
+    external: true

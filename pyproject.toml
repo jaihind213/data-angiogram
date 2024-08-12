@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "data-angiogram"
+version = "0.1.0"
+description = "demo on how to perform data angiogram to assess data quality and pipeline sanity"
+authors = ["vishnu rao"]
+license = "mit license"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "0.110.0"
+uvicorn = "0.23.2"
+httpx = "0.25.0"
+confluent-kafka = "2.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
