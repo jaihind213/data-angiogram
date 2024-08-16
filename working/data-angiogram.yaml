@@ -74,25 +74,25 @@ jobs:
         echo "HOST_IP=$HOST_IP" >> $GITHUB_ENV
     - name: 🚧  Start Docker containers
       run: |
-        docker-compose up postgres -d;
+        docker compose up postgres -d;
         sleep 35;
-        docker-compose up zookeeper -d;
+        docker compose up zookeeper -d;
         sleep 35;
-        docker-compose up kafka -d;
+        docker compose up kafka -d;
         sleep 70;
-        docker-compose up init-kafka;
-        docker-compose up angiogram-api -d;
+        docker compose up init-kafka;
+        docker compose up angiogram-api -d;
         sleep 35;
-        docker-compose up airflow-init;
-        docker-compose up airflow-scheduler airflow-webserver -d;
+        docker compose up airflow-init;
+        docker compose up airflow-scheduler airflow-webserver -d;
+        docker-compose logs
         sleep 420;
-        docker compose logs
     - name: 🔥Tear down
       run: |
         docker compose down -v || echo "tried to do docker compose down, it errored out. no worries"
     - name: 🔔Slack
       uses: ravsamhq/notify-slack-action@v2
-      if: ${{ always() && github.event_name == 'schedule' }}
+      # if: ${{ always() && github.event_name == 'schedule' }}
       with:
         status: ${{ job.status }} # required
         notification_title: "{workflow} has {status_message}"
