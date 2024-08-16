@@ -11,7 +11,7 @@ app = FastAPI()
 
 # Kafka configuration
 KAFKA_BROKER_URL = os.environ.get('KAFKA_BROKER_URL', 'localhost:9092')
-KAFKA_TOPIC = 'taxi_rides'
+KAFKA_TOPIC = os.environ.get('TAXI_TOPIC', 'taxi_rides')
 
 # Initialize Kafka producer
 producer_conf = {

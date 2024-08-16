@@ -1,5 +1,26 @@
+#docker network create test
 version: "2"
-
+x-airflow-common:
+  &airflow-common
+  image: jaihind213/angiogram-airflow:4.0
+  #platform: linux/amd64
+  environment:
+    - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+    - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://postgres:postgres@${HOST_IP}:5433/postgres
+    - AIRFLOW__CORE__FERNET_KEY=FB0o_zt4e3Ziq3LdUUO7F2Z95cvFFx16hU8jTeR1ASM=
+    - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    - AIRFLOW__CORE__LOGGING_LEVEL=INFO
+    - AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.basic_auth
+    - RAW_DATA_PATH=/opt/angiogram/data/raw_data
+    - STATS_DATA_PATH=/opt/angiogram/data/stats_data
+    - KAFKA_BROKER_URL=kafka:9092
+    - TAXI_TOPIC=taxi_rides
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./airflow-data/angiogram_data/:/opt/angiogram/data
+    - ./airflow-data/logs:/opt/airflow/logs
+    - ./airflow-data/plugins:/opt/airflow/plugins
+    - ./airflow-data/airflow.cfg:/opt/airlfow/airflow.cfg
 services:
   zookeeper:
     image: 'bitnami/zookeeper:3.5'
@@ -12,7 +33,7 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes
       - ZK_SERVER_HEAP=128
     networks:
-      - test
+      - angiogram
   kafka:
     image: 'bitnami/kafka:3.2'
     #hostname: kafka
@@ -23,7 +44,7 @@ services:
       - "9094:9094"
       - "9095:9095"
     networks:
-      - test
+      - angiogram
     environment:
       - KAFKA_BROKER_ID=1
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094,EXTERNAL2://:9095
@@ -36,33 +57,67 @@ services:
     depends_on:
       - kafka
     networks:
-      - test
+      - angiogram
     command: bash -c "sleep 40;
              kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic taxi_rides  --replication-factor 1 --partitions 1 ; "
   postgres:
     networks:
-      - test
+      - angiogram
     image: hbontempo/postgres-hll:15-alpine3.17-latest
     restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
-      - '5432:5432'
+      - '5433:5432'
     volumes:
       - db_data:/var/lib/postgresql/data
   angiogram-api:
-    image: jaihind213/angiogram-api:1.0
+    image: jaihind213/angiogram-api:4.0
     container_name: angiogram-api
     networks:
-      - test
+      - angiogram
     ports:
       - "8000:8000"
     environment:
       KAFKA_BROKER_URL: kafka:9092
+      TAXI_TOPIC: taxi_rides
     depends_on:
       - kafka
       - init-kafka
+  airflow-init:
+    <<: *airflow-common
+    container_name: airflow_init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - airflow db init &&
+        airflow users create
+        --role Admin
+        --username airflow
+        --password airflow
+        --email airflow@airflow.com
+        --firstname airflow
+        --lastname airflow
+    restart: on-failure
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: airflow webserver
+    ports:
+      - 8080:8080
+    container_name: airflow_webserver
+    restart: always
+    networks:
+      - angiogram
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: airflow scheduler
+    container_name: airflow_scheduler
+    restart: always
+    networks:
+      - angiogram
 
 volumes:
   kafka_data:
@@ -73,6 +128,6 @@ volumes:
 networks:
   #create network called 'test' outside this file
   #or point to 'minikube' network while using minikube k8s
-  #ex: 'docker network create test'
-  test:
+  #ex: 'docker network create angiogram'
+  angiogram:
     external: true

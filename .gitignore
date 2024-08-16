@@ -1,8 +1,9 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+airflow-data/.DS_Store
 *.py[cod]
 *$py.class
-
+docker/*.tgz
 # C extensions
 *.so
 
