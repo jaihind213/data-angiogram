@@ -73,7 +73,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
   angiogram-api:
-    image: jaihind213/angiogram-api:4.0
+    image: jaihind213/angiogram-api:4.1
     container_name: angiogram-api
     networks:
       - angiogram

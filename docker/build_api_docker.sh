@@ -5,7 +5,7 @@ poetry export --without-hashes --format=requirements.txt > requirements.txt
 DOCKER_ARGS="--output=type=registry"
 PLATFORM="linux/amd64,linux/arm64"
 
-TAGS="-t jaihind213/angiogram-api:4.0"
+TAGS="-t jaihind213/angiogram-api:4.1"
 export DOCKER_BUILDKIT=1
 docker buildx create --use
 docker buildx build $DOCKER_ARGS --platform $PLATFORM $TAGS -f DockerfileApi .

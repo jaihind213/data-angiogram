@@ -23,7 +23,7 @@ env:
   KAFKA_IMAGE: bitnami/kafka:3.2
   CONFLUENT_KAFKA_IMAGE: confluentinc/cp-kafka:6.1.1
   AIRFLOW_IMAGE: jaihind213/angiogram-airflow:4.0
-  ANGIOGRAM_API_IMAGE: jaihind213/angiogram-api:4.0
+  ANGIOGRAM_API_IMAGE: jaihind213/angiogram-api:4.1
   TAXI_TOPIC: taxi_rides
 
 
@@ -140,7 +140,7 @@ jobs:
         bash trigger_dag.sh taxi_revenue_by_car_model_date
         sleep 40
         parq airflow-data/angiogram_data/stats_data/stats.parquet --head 100
-    - name: 👮‍ Checkpoint 3 - Check Dag success ?
+    - name: ☎️‍ Checkpoint 4 - Check Dag success ?
       run: |
         RUN_ID=`cat /tmp/angiogram_dag_run_id`
         echo "RUN_ID=$RUN_ID"

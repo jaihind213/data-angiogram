@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -20,16 +21,16 @@ producer_conf = {
 producer = Producer(**producer_conf)
 
 class Payload(BaseModel):
-    taxi_id: str
-    pax_id: str
-    start_time: str
-    end_time: str
-    pickup_zipcode: str
-    dropoff_zipcode: str
-    tax_amount: float
-    fare_amount: float
-    currency: str
-    car_model: str
+    taxi_id: Optional[str] = None
+    pax_id: Optional[str] = None
+    start_time: Optional[str] = None
+    end_time: Optional[str] = None
+    pickup_zipcode: Optional[str] = None
+    dropoff_zipcode: Optional[str] = None
+    tax_amount: Optional[float] = None
+    fare_amount: Optional[float] = None
+    currency: Optional[str] = None
+    car_model: Optional[str] = None
 
 def delivery_report(err, msg):
     if err is not None:
@@ -43,7 +44,7 @@ async def publish(payload: Payload):
         logging.info(f'Publishing payload: {payload.dict()}')
         producer.produce(KAFKA_TOPIC, value=json.dumps(payload.dict()), callback=delivery_report)
         producer.flush()
-        return {"status": "success", "message": "Payload ingested."}
+        return {"status": "success", "message": "Payload ingested.", "taxi_id" : payload.dict()["taxi_id"] }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
