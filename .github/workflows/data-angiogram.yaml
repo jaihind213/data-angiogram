@@ -101,8 +101,8 @@ jobs:
     - name: 🚚  Generate/Validate/Send Angiogram data
       run: |
         echo "Generate/Validate/Send Angiogram data"
-        sh test-scenarios/test-for-revenue/generate_validate_angiogram_data.sh
-        sh test-scenarios/test-for-revenue/send_angiogram_data.sh
+        bash test-scenarios/test-for-revenue/generate_validate_angiogram_data.sh
+        bash test-scenarios/test-for-revenue/send_angiogram_data.sh
         MSGS_SENT=`cat /tmp/msgs_sent`
         MSGS_READ=`cat /tmp/msgs_read`
         echo "total MSGS_SENT=$MSGS_SENT"
