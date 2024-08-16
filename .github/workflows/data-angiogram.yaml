@@ -92,7 +92,7 @@ jobs:
         docker compose down -v || echo "tried to do docker compose down, it errored out. no worries"
     - name: 🔔Slack
       uses: ravsamhq/notify-slack-action@v2
-      # if: ${{ always() && github.event_name == 'schedule' }}
+      if: ${{ always() }}
       with:
         status: ${{ job.status }} # required
         notification_title: "{workflow} has {status_message}"
