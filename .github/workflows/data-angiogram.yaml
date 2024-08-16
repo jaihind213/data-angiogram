@@ -74,6 +74,7 @@ jobs:
         echo "HOST_IP=$HOST_IP" >> $GITHUB_ENV
     - name: 🚧  Start Docker containers
       run: |
+        docker network create angiogram
         docker compose up postgres -d;
         sleep 35;
         docker compose up zookeeper -d;
