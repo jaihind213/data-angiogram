@@ -23,3 +23,6 @@ curl -X POST "http://localhost:8080/api/v1/dags/${DAG_NAME}/dagRuns" \
   \"conf\": {},
   \"note\": \"string\"
 }"
+
+touch /tmp/angiogram_dag_run_id
+echo $RUN_ID >> /tmp/angiogram_dag_run_id

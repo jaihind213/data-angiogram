@@ -124,6 +124,15 @@ jobs:
           docker compose logs angiogram-api
           exit 3
         fi
+    - name: 🔫Trigger Pipeline Dag
+      run: |
+        bash trigger_dag.sh taxi_revenue_by_car_model_date
+        sleep 40
+    - name: 👮‍ Checkpoint 3 - Check Dag success ?
+      run: |
+        RUN_ID=`cat /tmp/angiogram_dag_run_id`
+        echo "RUN_ID=$RUN_ID"
+        bash check_dag_status.sh taxi_revenue_by_car_model_date $RUN_ID
     - name: 🔥Tear down
       run: |
         docker compose down -v || echo "tried to do docker compose down, it errored out. no worries"
