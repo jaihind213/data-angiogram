@@ -124,10 +124,21 @@ jobs:
           docker compose logs angiogram-api
           exit 3
         fi
-    - name: 🔫Trigger Pipeline Dag
+    - name: ☎️ Checkpoint 3 - Data Consistency Check => check if all recs in kafka
       run: |
+        MIN_MSG_TO_GET=${{ env.MSGS_READ }}
+        KAFKA_CONSUMER_LIFETIME_SEC=30
+        python -m kafka_check.py $KAFKA_CONSUMER_LIFETIME_SEC  ${{ env.HOST_IP }}:9095 gid-$RANDOM ${{ env.TOPICS }} $MIN_MSG_TO_GET
+    - name: 🔫 Trigger Pipeline Dag
+      run: |
+        echo "copying required code to airflow..."
+        cp create_stats_from_taxi_rides.py dags/
+        cp kafka_to_parquet_job.py dags/
+        echo "installing deps inside airflow...."
+        docker exec -it airflow_scheduler pip3 install --no-cache-dir -r  /opt/airflow/dags/requirements.txt
         bash trigger_dag.sh taxi_revenue_by_car_model_date
         sleep 40
+        parq airflow-data/angiogram_data/stats_data/stats.parquet --head 100
     - name: 👮‍ Checkpoint 3 - Check Dag success ?
       run: |
         RUN_ID=`cat /tmp/angiogram_dag_run_id`
