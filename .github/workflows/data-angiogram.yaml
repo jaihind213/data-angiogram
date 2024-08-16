@@ -136,7 +136,7 @@ jobs:
         cp create_stats_from_taxi_rides.py dags/
         cp kafka_to_parquet_job.py dags/
         echo "installing deps inside airflow...."
-        docker exec -it airflow_scheduler pip3 install --no-cache-dir -r  /opt/airflow/dags/requirements.txt
+        docker exec -t airflow_scheduler pip3 install --no-cache-dir -r  /opt/airflow/dags/requirements.txt
         bash trigger_dag.sh taxi_revenue_by_car_model_date
         sleep 40
         parq airflow-data/angiogram_data/stats_data/stats.parquet --head 100
