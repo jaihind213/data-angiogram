@@ -22,8 +22,8 @@ env:
   ZK_IMAGE: bitnami/zookeeper:3.5
   KAFKA_IMAGE: bitnami/kafka:3.2
   CONFLUENT_KAFKA_IMAGE: confluentinc/cp-kafka:6.1.1
-  AIRFLOW_IMAGE: jaihind213/angiogram-airflow:3.0
-  ANGIOGRAM_API_IMAGE: jaihind213/angiogram-api:1.0
+  AIRFLOW_IMAGE: jaihind213/angiogram-airflow:4.0
+  ANGIOGRAM_API_IMAGE: jaihind213/angiogram-api:4.0
   TAXI_TOPIC: taxi_rides
 
 
@@ -59,6 +59,7 @@ jobs:
         echo "Perform login to private docker registry using 'docker/login-action@v2' action"
     - name: 🏗️  Pull Dockers & Record versions of docker images
       run: |
+        chmod -R 777 ./airflow-data
         docker pull --quiet ${{ env.POSTGRES_IMAGE }}
         docker pull --quiet ${{ env.ZK_IMAGE }}
         docker pull --quiet ${{ env.KAFKA_IMAGE }}
