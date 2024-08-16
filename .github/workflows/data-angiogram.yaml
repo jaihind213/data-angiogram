@@ -129,7 +129,7 @@ jobs:
         pwd
         MIN_MSG_TO_GET=${{ env.MSGS_READ }}
         KAFKA_CONSUMER_LIFETIME_SEC=30
-        python kafka_check.py $KAFKA_CONSUMER_LIFETIME_SEC  ${{ env.HOST_IP }}:9095 gid-$RANDOM ${{ env.TOPICS }} $MIN_MSG_TO_GET
+        python kafka_check.py $KAFKA_CONSUMER_LIFETIME_SEC  ${{ env.HOST_IP }}:9095 gid-$RANDOM ${{ env.TAXI_TOPIC }} $MIN_MSG_TO_GET
     - name: 🔫 Trigger Pipeline Dag
       run: |
         echo "copying required code to airflow..."
