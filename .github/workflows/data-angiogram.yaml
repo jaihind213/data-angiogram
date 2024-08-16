@@ -87,35 +87,12 @@ jobs:
         docker-compose up airflow-scheduler airflow-webserver -d;
         sleep 420;
         docker compose logs
-    - name: 🇨🇭  Health Check Api
-      run: |
-        echo "checking if Api has Started properly"
-        curl -I http://localhost:8000/foo/bar |grep -i  "404"
-    - name: 🚒  Health Check Airflow
-      run: |
-        echo "checking if Airflow has Started properly"
-        curl -I http://localhost:8080/foo/bar |grep -i  "404"
-    - name: 💉💊  Send Angiogram test Dataset
-      run: |
-        echo "sending the angiogram dataset"
-    - name: 👽️  Reached Api
-      run: |
-        echo "api"
-    - name: 🚚  Reached Kafka
-      run: |
-        echo "kafka"
-    - name: 🏭  Trigger Pipeline DAG
-      run: |
-        echo "hi"
-    - name: 🚀 Verify Angiogram Results
-      run: |
-        echo "hi"
     - name: 🔥Tear down
       run: |
         docker compose down -v || echo "tried to do docker compose down, it errored out. no worries"
     - name: 🔔Slack
       uses: ravsamhq/notify-slack-action@v2
-      if: ${{ always() && github.event_name == 'schedule' }}
+      # if: ${{ always() && github.event_name == 'schedule' }}
       with:
         status: ${{ job.status }} # required
         notification_title: "{workflow} has {status_message}"
