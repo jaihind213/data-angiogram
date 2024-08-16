@@ -89,6 +89,10 @@ jobs:
         docker compose up airflow-scheduler airflow-webserver -d;
         sleep 420;
         docker compose logs
+    - name: 🚒  Health Check Airflow
+      run: |
+        echo "checking if Airflow has Started properly"
+        curl -I http://localhost:8080 |grep -i  "200"
     - name: 🇨🇭  Checkpoint 1 - Health Check Api
       run: |
         echo "checking if Api has Started properly"
