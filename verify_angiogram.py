@@ -20,6 +20,21 @@ def test_verify_state_column_in_stats_is_not_null():
     assert 0 == count, "Data Completeness test - State column should have no null values"
 
 
+def test_verify_if_all_car_models_are_present():
+    """
+    - Data Consistency test -
+    Verify that all car models are present in the stats
+    """
+    con = duckdb.connect(database=':memory:')
+    con.execute(f"""
+        CREATE TABLE stats AS 
+        SELECT * FROM read_parquet('{stats_data_path}/*.parquet')
+    """)
+    records = con.execute("SELECT count(distinct(car_model)) FROM stats ").fetchall()
+    count = records[0][0]
+    assert 4 == count, "Data Consistency test - All car models should be present"
+
+
 def test_verify_if_old_data_not_considered():
     """
     - Data Consistency test -
