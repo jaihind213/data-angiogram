@@ -109,7 +109,7 @@ jobs:
         echo "MSGS_SENT=$MSGS_SENT" >> $GITHUB_ENV
         echo "total MSGS_READ=$MSGS_READ"
         echo "MSGS_READ=$MSGS_READ" >> $GITHUB_ENV
-    - name: 👮‍ Checkpoint 2 - Data Consistency Check => num_record_sent = num_record_generated
+    - name: 👮  Checkpoint 2 - Data Consistency Check => num_record_sent = num_record_generated
       run: |
         export MSGS_SENT=${{ env.MSGS_SENT }}
         export MSGS_READ=${{ env.MSGS_READ }}
@@ -124,13 +124,13 @@ jobs:
           docker compose logs angiogram-api
           exit 3
         fi
-    - name: ☎️ Checkpoint 3 - Data Consistency Check => check if all recs in kafka
+    - name: ☎️‍  Checkpoint 3 - Data Consistency Check => check if all recs in kafka
       run: |
         pwd
         MIN_MSG_TO_GET=${{ env.MSGS_READ }}
         KAFKA_CONSUMER_LIFETIME_SEC=30
         python kafka_check.py $KAFKA_CONSUMER_LIFETIME_SEC  ${{ env.HOST_IP }}:9095 gid-$RANDOM ${{ env.TAXI_TOPIC }} $MIN_MSG_TO_GET
-    - name: 🔫 Trigger Pipeline Dag
+    - name: 🔫  Trigger Pipeline Dag
       run: |
         echo "copying required code to airflow..."
         cp create_stats_from_taxi_rides.py dags/
@@ -140,17 +140,28 @@ jobs:
         bash trigger_dag.sh taxi_revenue_by_car_model_date
         sleep 40
         parq airflow-data/angiogram_data/stats_data/stats.parquet --head 100
-    - name: ☎️‍ Checkpoint 4 - Check Dag success ?
+    - name: ☎️‍  Checkpoint 4 - Check Dag success ?
       run: |
         RUN_ID=`cat /tmp/angiogram_dag_run_id`
         echo "RUN_ID=$RUN_ID"
         bash check_dag_status.sh taxi_revenue_by_car_model_date $RUN_ID
-    - name: 🔥Tear down
+    - name: ✅❌ Final Checkpoint - Angiogram Verification
+      run: |
+        "echo By running pytest, we are verifying the angiogram based on pipeline output"
+        pwd=`pwd`
+        export STATS_DATA_PATH=${pwd}/airflow-data/angiogram_data/stats_data
+        echo "pipeline output at $STATS_DATA_PATH ...."
+        pytest verify_angiogram.py
+    - name: 💚🎉💯 Congratulations !
+      run: |
+        echo "Congrats! Data Angiogram has been verified 🙌"
+    - name: 🔥  Tear down
       run: |
         docker compose down -v || echo "tried to do docker compose down, it errored out. no worries"
-    - name: 🔔Slack
+    - name: 🔔  Slack
       uses: ravsamhq/notify-slack-action@v2
       if: ${{ always() }}
+      # for slack webhook url, you need to install the slack app 'INCOMING WEBHOOKS'
       with:
         status: ${{ job.status }} # required
         notification_title: "{workflow} has {status_message}"
