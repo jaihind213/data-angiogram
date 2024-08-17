@@ -147,7 +147,7 @@ jobs:
         bash check_dag_status.sh taxi_revenue_by_car_model_date $RUN_ID
     - name: ✅❌ Final Checkpoint - Angiogram Verification
       run: |
-        "echo By running pytest, we are verifying the angiogram based on pipeline output"
+        echo "By running pytest, we are verifying the angiogram based on pipeline output"
         pwd=`pwd`
         export STATS_DATA_PATH=${pwd}/airflow-data/angiogram_data/stats_data
         echo "pipeline output at $STATS_DATA_PATH ...."
