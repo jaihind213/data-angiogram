@@ -18,7 +18,8 @@ MSG_READ=0
 # Read each line from the file and send a POST request
 while read -r line; do
   let MSG_READ=MSG_READ+1
-  curl -X POST -H "Content-Type: application/json" -d "$line" http://localhost:8000/taxis
+  echo "sending $line"
+  curl -X POST -H "Content-Type: application/json" -d "$line" http://localhost:8000/taxis |grep -i "Payload ingested."
   return_code=$?
    if [ $return_code -ne 0 ]; then
     echo "Send encountered an error. return code: $return_code"

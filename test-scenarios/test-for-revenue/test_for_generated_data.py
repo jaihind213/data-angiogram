@@ -47,6 +47,19 @@ def test_for_trip_with_negative_amount():
 
     assert 1 == num_trips_with_negative_fare, "one trip has negative fare"
 
+def test_for_zipcode_for_jeep_trips():
+    num_trips_with_10004_zipcode = 0
+    with open("taxi_rides.txt", "r") as file:
+        for line in file:
+            json_object = json.loads(line)
+            car_model = json_object["car_model"]
+            if car_model != 'Jeep':
+                continue
+            assert "10004" == json_object["pickup_zipcode"], "Jeep trips are in 10004 zipcode"
+            num_trips_with_10004_zipcode += 1
+
+    assert 5 == num_trips_with_10004_zipcode, "5 trips with Jeep alll in 10004 zipcode"
+
 def test_for_total_revenue_for_Jeep():
     total_fare_amount = 0
     total_tax_amount = 0

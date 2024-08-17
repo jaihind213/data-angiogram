@@ -10,7 +10,7 @@ def generate_payloads():
     num_random = 10
     passenger_ids = ['tom', 'batman']
     car_models = ['Toyota', 'Benz', 'Ford']
-    zipcodes = ['10001', '10002', '10003', '10004']
+    zipcodes = ['10001', '10002', '10003']
 
     payloads = []
     current_time = datetime.now()
@@ -39,7 +39,7 @@ def generate_payloads():
         "pax_id": "jerry",
         "start_time": (datetime.now() + timedelta(minutes=random.randint(1, 3))).isoformat(),
         "end_time": (datetime.now() + timedelta(minutes=random.randint(4, 6))).isoformat(),
-        "pickup_zipcode": random.choice(zipcodes),
+        "pickup_zipcode": "10004",
         "dropoff_zipcode": random.choice(zipcodes),
         "tax_amount": 0.1,
         "fare_amount": 10.1,
@@ -51,7 +51,7 @@ def generate_payloads():
         "pax_id": "jerry",
         "start_time": (datetime.now() + timedelta(minutes=random.randint(7, 8))).isoformat(),
         "end_time": (datetime.now() + timedelta(minutes=random.randint(9, 10))).isoformat(),
-        "pickup_zipcode": random.choice(zipcodes),
+        "pickup_zipcode": "10004",
         "dropoff_zipcode": random.choice(zipcodes),
         "tax_amount": 0.1,
         "fare_amount": 10.1,
@@ -65,7 +65,7 @@ def generate_payloads():
         "pax_id": random.choice(passenger_ids[:3]),  # Random valid passenger ID
         "start_time": generate_old_datetime(),
         "end_time": (datetime(1970, 1, 1) + timedelta(minutes=30)).isoformat(),
-        "pickup_zipcode": random.choice(zipcodes),
+        "pickup_zipcode": "10004",
         "dropoff_zipcode": random.choice(zipcodes),
         "tax_amount": 0.1,
         "fare_amount": 10.1,
@@ -79,7 +79,7 @@ def generate_payloads():
         "pax_id": None,  # Passenger ID is null
         "start_time": current_time.isoformat(),
         "end_time": (current_time + timedelta(minutes=30)).isoformat(),
-        "pickup_zipcode": random.choice(zipcodes),
+        "pickup_zipcode": "10004",
         "dropoff_zipcode": random.choice(zipcodes),
         "tax_amount": 0.1,
         "fare_amount": 10.1,
@@ -93,7 +93,7 @@ def generate_payloads():
         "pax_id": random.choice(passenger_ids[:3]),  # Random valid passenger ID
         "start_time": current_time.isoformat(),
         "end_time": (current_time + timedelta(minutes=30)).isoformat(),
-        "pickup_zipcode": random.choice(zipcodes),
+        "pickup_zipcode": "10004",
         "dropoff_zipcode": random.choice(zipcodes),
         "tax_amount": -0.5,  # Negative tax amount
         "fare_amount": -5.0,
