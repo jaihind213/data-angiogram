@@ -3,11 +3,6 @@ import os
 import random
 from datetime import datetime, timedelta
 
-def generate_random_datetime(start_year=2000):
-    start = datetime(start_year, 1, 1)
-    end = datetime.now()
-    return start + (end - start) * random.random()
-
 def generate_old_datetime():
     return datetime(1970, 1, 1).isoformat()
 
@@ -22,7 +17,7 @@ def generate_payloads():
     for _ in range(num_random - 3):
         start_time = current_time
         end_time = start_time + timedelta(minutes=random.randint(1, 60))
-        tax_amt = round(random.uniform(0.1, 7.5), 2)
+        fare_amount = round(random.uniform(2.5, 7.5), 2)
 
         payload = {
             "taxi_id": f"taxi_{random.randint(1, 100)}",
@@ -31,14 +26,14 @@ def generate_payloads():
             "end_time": end_time.isoformat(),
             "pickup_zipcode": random.choice(zipcodes),
             "dropoff_zipcode": random.choice(zipcodes),
-            "tax_amount": round(tax_amt * 0.1, 2),  # Assuming tax amount is 10% of fare
-            "fare_amount": 5.1,
+            "tax_amount": round(fare_amount * 0.1, 2),  # Assuming tax amount is 10% of fare
+            "fare_amount": fare_amount,
             "currency": 'USD',
             "car_model": random.choice(car_models)
         }
         payloads.append(payload)
 
-    # Add specific cases
+    # Add specific cases. for -ive fare,null pax, 1970 trip - with jeep car model
     payloads.append({
         "taxi_id": f"taxi_jeep_1",
         "pax_id": "jerry",
@@ -64,34 +59,37 @@ def generate_payloads():
         "car_model": 'Jeep'
     })
 
+    # very old data
     payloads.append({
-        "taxi_id": f"taxi_{random.randint(1, 100)}",
+        "taxi_id": f"taxi_jeep_3",
         "pax_id": random.choice(passenger_ids[:3]),  # Random valid passenger ID
         "start_time": generate_old_datetime(),
         "end_time": (datetime(1970, 1, 1) + timedelta(minutes=30)).isoformat(),
         "pickup_zipcode": random.choice(zipcodes),
         "dropoff_zipcode": random.choice(zipcodes),
-        "tax_amount": 0.75,
-        "fare_amount": 7.5,
+        "tax_amount": 0.1,
+        "fare_amount": 10.1,
         "currency": 'USD',
-        "car_model": random.choice(car_models)
+        "car_model": 'Jeep'
     })
 
+    # pax id is null
     payloads.append({
-        "taxi_id": f"taxi_{random.randint(1, 100)}",
+        "taxi_id": f"taxi_jeep_4",
         "pax_id": None,  # Passenger ID is null
         "start_time": current_time.isoformat(),
         "end_time": (current_time + timedelta(minutes=30)).isoformat(),
         "pickup_zipcode": random.choice(zipcodes),
         "dropoff_zipcode": random.choice(zipcodes),
-        "tax_amount": 0.75,
-        "fare_amount": 7.5,
+        "tax_amount": 0.1,
+        "fare_amount": 10.1,
         "currency": 'USD',
-        "car_model": random.choice(car_models)
+        "car_model": 'Jeep'
     })
 
+    # negative payload
     payloads.append({
-        "taxi_id": f"taxi_{random.randint(1, 100)}",
+        "taxi_id": f"taxi_Jeep5",
         "pax_id": random.choice(passenger_ids[:3]),  # Random valid passenger ID
         "start_time": current_time.isoformat(),
         "end_time": (current_time + timedelta(minutes=30)).isoformat(),
@@ -100,7 +98,7 @@ def generate_payloads():
         "tax_amount": -0.5,  # Negative tax amount
         "fare_amount": -5.0,
         "currency": 'USD',
-        "car_model": random.choice(car_models)
+        "car_model": 'Jeep'
     })
 
     return payloads
