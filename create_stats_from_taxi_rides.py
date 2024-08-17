@@ -38,7 +38,7 @@ def caculate_revenue():
             trips.car_model, 
             zipcode_mapping.state, 
             trips.currency, 
-            strftime('%Y-%m-%d', start_time),
+            strftime('%Y-%m-%d', start_time) as trip_date,
             SUM(fare_amount) AS revenue
         FROM 
             trips
