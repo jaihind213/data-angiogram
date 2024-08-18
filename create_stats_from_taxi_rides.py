@@ -33,6 +33,7 @@ def caculate_revenue():
     """)
 
     # Run the query
+    # todo: fix this query to get the correct revenue by adding the tax_amount also
     query = """
         SELECT 
             trips.car_model, 
