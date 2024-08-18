@@ -46,11 +46,12 @@ refer to create_stats_from_taxi_rides.py to see the code for the pipeline.
 
 You can fix the revenue calculation in the code & see the pipeline pass.
 
+![Angiogram_in_action](angiogram_failure.jpg)
+
 ## Where was this idea presented first? and where are the slides ?
 
 This idea was first presented by me at the [Smart Data 2024 conference](https://smartdataconf.ru/en/talks/124ab9dc49fa49ef8fc746eefecb9db1/?referer=%2Fen%2Fpersons%2Ff699b5d2a3514e6aaa50e92ece77f414%2F).
 
-![Angiogram_in_action](angiogram_failure.png)
 
 ## Project Setup on your local
 
