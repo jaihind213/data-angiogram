@@ -1,10 +1,13 @@
-name: Data-Angiogram 🫀🧪
+name: Data-Angiogram 🫀🧪 - Variant 1
 # Author: Vishnu Chanderraju
 # Description: This workflow demonstrates how to run a data angiogram. It serves as template.
 # This demonstration has been done for a presentation at smartdataconf.ru 2024 conference
 # The talk is 'Assessing Data Pipeline Quality & Sanity with Data Angiograms'
 # talk url: https://smartdataconf.ru/en/talks/124ab9dc49fa49ef8fc746eefecb9db1/?referer=%2Fen%2Fpersons%2Ff699b5d2a3514e6aaa50e92ece77f414%2F
 # mit license
+
+# Variant 1: This is a simple variant of the data angiogram workflow.
+# Variant 2: Todo: include minikube helm charts for running the pipeline in k8s
 
 on:
   # Run this just before your STANDUP say 1100hrs EVERY DAY :)

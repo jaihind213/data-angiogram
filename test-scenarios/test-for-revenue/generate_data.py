@@ -15,7 +15,7 @@ def generate_payloads():
     payloads = []
     current_time = datetime.now()
     use_tom = True
-    for _ in range(num_random - 3):
+    for _ in range(1, 5):
         start_time = current_time
         end_time = start_time + timedelta(minutes=random.randint(1, 60))
         fare_amount = round(random.uniform(2.5, 7.5), 2)
@@ -35,7 +35,22 @@ def generate_payloads():
         use_tom = not use_tom
         payloads.append(payload)
 
-    # Add specific cases. for -ive fare,null pax, 1970 trip - with jeep car model
+    # atleast 1 trip for each above car model
+    for i in range (0, 3):
+        payloads.append({
+            "taxi_id": f"taxi_{random.randint(1, 100)}_{car_models[i]}",
+            "pax_id": "jerry",
+            "start_time": (datetime.now() + timedelta(minutes=random.randint(1, 3))).isoformat(),
+            "end_time": (datetime.now() + timedelta(minutes=random.randint(4, 6))).isoformat(),
+            "pickup_zipcode": "10004",
+            "dropoff_zipcode": random.choice(zipcodes),
+            "tax_amount": 0.1,
+            "fare_amount": 10.1,
+            "currency": 'USD',
+            "car_model": car_models[i]
+        })
+
+    # Add specific cases. # JEEP data
     payloads.append({
         "taxi_id": f"taxi_jeep_1",
         "pax_id": "jerry",
