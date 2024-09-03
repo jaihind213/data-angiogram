@@ -1,0 +1,101 @@
+name: Data-Angiogram 🫀🧪
+# Author: Vishnu Chanderraju
+# Description: This workflow demonstrates how to run a data angiogram. It serves as template.
+# This demonstration has been done for a presentation at smartdataconf.ru 2024 conference
+# The talk is 'Assessing Data Pipeline Quality & Sanity with Data Angiograms'
+# talk url: https://smartdataconf.ru/en/talks/124ab9dc49fa49ef8fc746eefecb9db1/?referer=%2Fen%2Fpersons%2Ff699b5d2a3514e6aaa50e92ece77f414%2F
+# mit license
+
+on:
+  # Run this just before your STANDUP say 1100hrs EVERY DAY :)
+  #schedule:
+  #  - cron: "8 5 * * *" #just before standup at 1100am
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  REGISTRY: docker.io/jaihind213
+  POSTGRES_IMAGE: hbontempo/postgres-hll:15-alpine3.17-latest
+  ZK_IMAGE: bitnami/zookeeper:3.5
+  KAFKA_IMAGE: bitnami/kafka:3.2
+  CONFLUENT_KAFKA_IMAGE: confluentinc/cp-kafka:6.1.1
+  AIRFLOW_IMAGE: jaihind213/angiogram-airflow:3.0
+  ANGIOGRAM_API_IMAGE: jaihind213/angiogram-api:1.0
+  TAXI_TOPIC: taxi_rides
+
+
+jobs:
+  data-angiogram-pipeline:
+    runs-on: ubuntu-latest
+    environment: cicd
+    steps:
+    - name: Generate GitHub token
+      run: |
+        echo "Generate GitHub token if you need using 'tibdex/github-app-token@v1' action"
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+    - name: ☕  Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17.0'
+        distribution: 'temurin'
+    - name: 🐍  let Pythons into garden
+      run: |
+        python -m pip install --upgrade pip
+        pip install --upgrade poetry
+        poetry install
+        poetry export --without-hashes --format=requirements.txt > dags/requirements.txt 
+        pip install -r dags/requirements.txt
+        pip install parquet-cli
+    - name: 🔒  Login to Private docker registry ️
+      run: |
+        echo "Perform login to private docker registry using 'docker/login-action@v2' action"
+    - name: 🏗️  Pull Dockers & Record versions of docker images
+      run: |
+        docker pull --quiet ${{ env.POSTGRES_IMAGE }}
+        docker pull --quiet ${{ env.ZK_IMAGE }}
+        docker pull --quiet ${{ env.KAFKA_IMAGE }}
+        docker pull --quiet ${{ env.CONFLUENT_KAFKA_IMAGE }}
+        docker pull --quiet ${{ env.AIRFLOW_IMAGE }}
+        docker pull --quiet ${{ env.ANGIOGRAM_API_IMAGE }}
+        sudo apt-get install -q=2 --yes --no-install-recommends postgresql-client >/dev/null 2>&1
+        sudo apt-get install -q=2 --yes --no-install-recommends curl >/dev/null 2>&1 
+        echo "listing images being used"
+        docker images --digests
+        #hardcoding ip of runner its always 172.17.0.1
+        export HOST_IP=172.17.0.1
+        echo "HOST_IP=$HOST_IP" >> $GITHUB_ENV
+    - name: 🚧  Start Docker containers
+      run: |
+        docker compose up postgres -d;
+        sleep 35;
+        docker compose up zookeeper -d;
+        sleep 35;
+        docker compose up kafka -d;
+        sleep 70;
+        docker compose up init-kafka;
+        docker compose up angiogram-api -d;
+        sleep 35;
+        docker compose up airflow-init;
+        docker compose up airflow-scheduler airflow-webserver -d;
+        docker-compose logs
+        sleep 420;
+    - name: 🔥Tear down
+      run: |
+        docker compose down -v || echo "tried to do docker compose down, it errored out. no worries"
+    - name: 🔔Slack
+      uses: ravsamhq/notify-slack-action@v2
+      # if: ${{ always() && github.event_name == 'schedule' }}
+      with:
+        status: ${{ job.status }} # required
+        notification_title: "{workflow} has {status_message}"
+        footer: "<{run_url}|View Run> . this is ${{ github.event_name }} run"
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

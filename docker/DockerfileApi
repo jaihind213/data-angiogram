@@ -1,0 +1,25 @@
+FROM jaihind213/ubuntu-python3:3.10
+LABEL maintainer="Vishnu Rao jaihind213@gmail.com"
+LABEL description="http api server to ingest taxi rides for data-angiogram demo"
+
+USER 0
+#https://github.com/moby/moby/issues/5419#issuecomment-41478290
+RUN useradd --no-log-init -m angiogram
+RUN rm -f /etc/apt/sources.list.d/archive_uri-* && apt update && apt-get install -y libpq-dev build-essential gcc && rm -rf /var/lib/apt/lists/*
+RUN mkdir /opt/angiogram
+WORKDIR /opt/angiogram
+
+COPY api_server.py /opt/angiogram/
+COPY requirements.txt /opt/angiogram/
+
+
+# Install any needed packages specified in requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+RUN chown -R angiogram:angiogram /opt/angiogram
+USER angiogram
+
+EXPOSE 8000
+
+# Run server.py when the container launches
+CMD ["python3", "/opt/angiogram/api_server.py"]

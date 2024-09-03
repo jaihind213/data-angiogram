@@ -1,0 +1,39 @@
+name: Data-Angiogram 🫀🧪 - Variant 2
+# Author: Vishnu Chanderraju
+# Description: This workflow demonstrates how to run a data angiogram. It serves as template.
+# This demonstration has been done for a presentation at smartdataconf.ru 2024 conference
+# The talk is 'Assessing Data Pipeline Quality & Sanity with Data Angiograms'
+# talk url: https://smartdataconf.ru/en/talks/124ab9dc49fa49ef8fc746eefecb9db1/?referer=%2Fen%2Fpersons%2Ff699b5d2a3514e6aaa50e92ece77f414%2F
+# mit license
+
+# Variant 2: Todo: include minikube helm charts for running the pipeline in k8s
+
+on:
+  # Run this just before your STANDUP say 1100hrs EVERY DAY :)
+  #schedule:
+  #  - cron: "8 5 * * *" #just before standup at 1100am
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  REGISTRY: docker.io/jaihind213
+  POSTGRES_IMAGE: hbontempo/postgres-hll:15-alpine3.17-latest
+  ZK_IMAGE: bitnami/zookeeper:3.5
+  KAFKA_IMAGE: bitnami/kafka:3.2
+  CONFLUENT_KAFKA_IMAGE: confluentinc/cp-kafka:6.1.1
+  AIRFLOW_IMAGE: jaihind213/angiogram-airflow:4.0
+  ANGIOGRAM_API_IMAGE: jaihind213/angiogram-api:4.1
+  TAXI_TOPIC: taxi_rides
+
+
+jobs:
+  data-angiogram-pipeline:
+    runs-on: ubuntu-latest
+    environment: cicd
+    steps:
+    - name: This is a Todo
+      run: |
+        echo "Variant 2: Todo: include minikube helm charts for running the pipeline in k8s"

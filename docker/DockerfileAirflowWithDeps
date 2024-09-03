@@ -1,0 +1,29 @@
+FROM apache/airflow:2.9.2-python3.10
+LABEL maintainer="Vishnu Rao jaihind213@gmail.com"
+LABEL description="Airflow pipeline job to process taxi rides for data-angiogram demo"
+
+USER 0
+
+RUN mkdir -p /opt/angiogram/data
+WORKDIR /opt/angiogram
+
+RUN  apt-get update && apt-get install default-jdk -y
+#RUN  apt-get update && apt-get install software-properties-common libpq-dev build-essential gcc -y
+#RUN rm -f /etc/apt/sources.list.d/archive_uri-* && apt-get update && apt-get install -y default-jdk && rm -rf /var/lib/apt/lists/*
+RUN java -version
+ENV JAVA_HOME=/usr/lib/jvm/default-java
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+#RUN curl -O https://archive.apache.org/dist/spark/spark-3.4.0/spark-3.4.0-bin-hadoop3-scala2.13.tgz  && \
+#    tar -xzf spark-3.4.0-bin-hadoop3-scala2.13.tgz -C /opt/angiogram/
+COPY spark-3.4.0-bin-hadoop3-scala2.13.tgz /opt/angiogram/spark-3.4.0-bin-hadoop3-scala2.13.tgz
+RUN tar -xzf spark-3.4.0-bin-hadoop3-scala2.13.tgz && rm -f spark-3.4.0-bin-hadoop3-scala2.13.tgz
+ENV SPARK_HOME=/opt/angiogram/spark-3.4.0-bin-hadoop3-scala2.13
+RUN /opt/angiogram/spark-3.4.0-bin-hadoop3-scala2.13/./bin/spark-submit --help
+#COPY requirements.txt /opt/angiogram/
+#RUN pip3 install --no-cache-dir -r  /opt/angiogram/requirements.txt
+ENV PYTHONPATH=$PYTHONPATH:/opt/airflow/dags:/opt/angiogram
+
+RUN chmod -R 777 /opt/angiogram
+WORKDIR /opt/airflow
+USER airflow
