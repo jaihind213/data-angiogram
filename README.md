@@ -50,8 +50,9 @@ You can fix the revenue calculation in the code & see the pipeline pass.
 
 ## Where was this idea presented first? and where are the slides ?
 
-This idea was first presented by me at the [Smart Data 2024 conference](https://smartdataconf.ru/en/talks/124ab9dc49fa49ef8fc746eefecb9db1/?referer=%2Fen%2Fpersons%2Ff699b5d2a3514e6aaa50e92ece77f414%2F).
+This idea was first presented by me at the [Smart Data 2024 conference](https://smartdataconf.ru/en/talks/124ab9dc49fa49ef8fc746eefecb9db1/).
 
+The slides are available [at slideshare.](https://www.slideshare.net/slideshow/assessing-data-pipeline-quality-sanity-with-data-angiograms-pdf/271686595)
 
 ## Project Setup on your local
 
